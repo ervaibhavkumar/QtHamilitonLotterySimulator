@@ -7,9 +7,14 @@ Window {
     width: 900
     height: 780
     visible: true
-    title: qsTr("Hamiliton Lottery Simulator")
+    title: qsTr("Hamilton Lottery Simulator")
 
+    readonly property int tickets: 10
     property int count: 0
+    property int people: 20000
+    property int prob: people / tickets
+    property real notWinning: ( prob - 1 ) / prob // example 4999 / 5000
+    property int atLeastOneTimeWin: Math.floor( Math.log(0.01) / Math.log( notWinning ) )
 
     Timer {
         id: timer
@@ -17,7 +22,7 @@ Window {
         running: false
         repeat: true
         onTriggered: {
-            var num = Math.floor( Math.random() * 5000 )
+            var num = Math.floor( Math.random() * people )
             // when 16 is the selected, then you won
             if ( num == 16 ) {
                 state.text = "You Won!!"
@@ -31,7 +36,7 @@ Window {
 
     Column {
         anchors.fill: parent
-        spacing: 30
+        spacing: 25
         Text {
             id: heading
             text: qsTr("Hamilton Lottery Simulator")
@@ -41,9 +46,25 @@ Window {
             anchors.horizontalCenter: parent.horizontalCenter
         }
 
+        Slider {
+            from: 50
+            to: 100000
+            value: people
+            stepSize: 100
+            anchors.horizontalCenter: parent.horizontalCenter
+            onValueChanged: {
+                toolTip.visible = true
+                people = value
+            }
+            ToolTip {
+                id: toolTip
+                text: "People: " + people
+            }
+        }
+
         Text {
             width: parent.width
-            text: qsTr("This Simulator assumes 10 tickets available every night with 50000 people entering lottery.")
+            text: qsTr("This Simulator assumes " + tickets + " tickets available every night with " + people + " people entering lottery.")
             font.pixelSize: 30
             horizontalAlignment: Text.AlignHCenter
             anchors.horizontalCenter: parent.horizontalCenter
@@ -52,7 +73,7 @@ Window {
 
         Text {
             width: parent.width
-            text: qsTr("You have 1 in 5000 chance of winning")
+            text: qsTr("You have 1 in " + prob + " chance of winning")
             font.pixelSize: 30
             horizontalAlignment: Text.AlignHCenter
             anchors.horizontalCenter: parent.horizontalCenter
@@ -64,7 +85,7 @@ Window {
         // prob of not winning N times =  ( 4999 / 5000 ) ^ N = 1 - prob of winning at least one time
         Text {
             width: parent.width
-            text: qsTr("In order to have 99% chance of winning the lottery atleast one time, you must play the lottery ~23000 times")
+            text: qsTr("In order to have 99% chance of winning the lottery atleast one time, you must play the lottery ~" + atLeastOneTimeWin + " times")
             font.pixelSize: 30
             horizontalAlignment: Text.AlignHCenter
             anchors.horizontalCenter: parent.horizontalCenter
@@ -77,7 +98,7 @@ Window {
             text: "Start entering the lottery"
 
             palette {
-                button: "grey"
+                button: "#CCC"
             }
 
             onClicked: {
