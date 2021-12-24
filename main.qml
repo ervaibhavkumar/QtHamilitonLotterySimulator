@@ -81,7 +81,6 @@ Window {
             }
 
             onClicked: {
-                // start
                 count = 0
                 timer.start()
             }
